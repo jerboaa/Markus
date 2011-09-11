@@ -11,6 +11,7 @@ class MainController < ApplicationController
                      :except => [:login,
                                  :page_not_found]
   before_filter :authorize_only_for_admin, :only => [:login_as]
+  before_filter :authorize_for_ta_and_admin, :only => [:reset_api_key]
 
   #########################################################################
   # Authentication
@@ -135,15 +136,10 @@ class MainController < ApplicationController
     # triggered by clicking on the about icon
   end
 
+  # Authorized for admins and TAs
   def reset_api_key
-    render :file => "#{::Rails.root.to_s}/public/404.html", :status => 404 and return unless request.post?
-    # Students shouldn't be able to change their API key
-    if !@current_user.student?
-      @current_user.reset_api_key
-      @current_user.save
-    else
-      render :file => "#{::Rails.root.to_s}/public/404.html", :status => 404 and return
-    end
+    @current_user.reset_api_key
+    @current_user.save
     render :action => 'api_key_replace', :locals => {:user => @current_user }
   end
 

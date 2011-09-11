@@ -1,3 +1,10 @@
+<% content_for :head do %>
+	<%= 
+    # We need this for the remote form of resetting
+    # the api key to work. This is weird, since
+    # rails.js is there already.
+    javascript_include_tag "rails.js" %>
+<% end %>
 <div id="title_bar"><h1><%= I18n.t("grade_assignments") %></h1></div>
 <div class="wrapLeft">
   <%= render :partial => "assignments/list_manage",

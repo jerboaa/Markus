@@ -2,6 +2,11 @@
 	<%= javascript_include_tag "Bluff/js-class.js",
  		"Bluff/bluff.js",
 		"Bluff/excanvas.js" %>
+	<%= 
+    # We need this for the remote form of resetting
+    # the api key to work. This is weird, since
+    # rails.js is there already.
+    javascript_include_tag "rails.js" %>
 <% end %>
 
 <% if !@current_user.student? and
