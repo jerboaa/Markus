@@ -185,6 +185,7 @@ Markus::Application.routes.draw do
         post 'delete_annotation_text'
         post 'update_annotation_category'
         post 'update_annotation'
+        post 'add_annotation_category'
       end
     end
   end
