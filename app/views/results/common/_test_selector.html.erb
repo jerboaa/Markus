@@ -2,15 +2,12 @@
    # file when using this partial
 %>
   <%=label_tag "select_test_result_id", h(I18n.t("common.test_results")), :class => "inline_label" %>
-<%= link_to_remote( image_tag("icons/cog_go.png", :alt => I18n.t("common.test_code"), :title => I18n.t("common.test_code"), :id => "test_icon"),
-{:url => {:action => "index", :controller => "test_framework", :result => @result},
- :before => "$('running_tests').show();",
- :complete => "$('running_tests').hide();$('tests_complete').show()"}) %>
   <select id="select_test_result_id" onchange="if ($(this).getValue() != '') { load_test_result($(this).getValue()); }">
-    <% if test_result_files.find_all_by_user_id(@current_user.id).empty? %>
+    <% 
+    if test_result_files.empty? %>
       <option value=""><%= I18n.t("test_result.no_files_available")%></option>
     <% else %>
-      <% test_result_files.find_all_by_user_id(@current_user.id, :order => "created_at DESC").each do |file| %>
+      <% test_result_files.each do |file| %>
         <option value="<%= h(file.id) %>">
           <%= h(file.filename) %>
         </option>
@@ -21,18 +18,4 @@
       value="<%= I18n.t("test_result.button.load")%>" />
   <span id="loading_test_result" style="display:none;">
     <%= image_tag('spinner.gif') %> <%= I18n.t("test_result.loading_results") %>
-  </span>
-  <span id="running_tests" style="display:none;">
-    <%= image_tag('spinner.gif') %> <%= I18n.t("test_result.running_tests") %>
-  </span>
-  <span id="tests_complete" style="display:none;">
-    <% if test_result_files.find_last_by_user_id(@current_user.id) %>
-      <% if test_result_files.find_last_by_user_id(@current_user.id).status == 'success' %>
-        <%= I18n.t("test_result.build_successful", {:logfile => test_result_files.find_last_by_user_id(@current_user.id).filename}) %>
-      <% elsif test_result_files.find_last_by_user_id(@current_user.id).status == 'failed' %>
-        <%= I18n.t("test_result.build_failed", {:logfile => test_result_files.find_last_by_user_id(@current_user.id).filename}) %>
-      <% else %>
-        <%= I18n.t("test_result.build_error", {:logfile => test_result_files.find_last_by_user_id(@current_user.id).filename}) %>
-      <% end %>
-    <% end %>
   </span>

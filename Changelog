@@ -1,3 +1,7 @@
+Changes for MarkUs 0.11.1:
+* UI fixups related to the test framework
+  (similar to 0.9.3).
+
 Changes for MarkUs 0.11.0:
 * Add simple hiding assignments from students
   feature.
