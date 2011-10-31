@@ -26,7 +26,7 @@ function submit_files(){
 	new_files_param_post=" "
 	new_files_param=""
 	# Build new_files_parameter. I.e. upload all files at once (one request)
-	for submission_file in `find "$SUBMISSION_FILES_FOLDER" -name "*.rb"`; do
+	for submission_file in $( find "$SUBMISSION_FILES_FOLDER" -name "*.rb" ); do
 		# construct curl parameters for submission files
 		new_files_param="${new_files_param}${new_files_param_pre}${submission_file}${new_files_param_post}"
 	done
@@ -51,17 +51,17 @@ if [ $# -lt 2 ] || [ $STUDENT_NUMBER_FROM -lt 0 ] ||
 	usage
 fi
 
-if ! `which curl > /dev/null 2>&1`; then
+if ! $( which curl > /dev/null 2>&1 ); then
 	echo "$0 requires curl which is not in your PATH" 1>&2
 	exit 1
-fi 
+fi
 
 # create logdir if not existing
 if [ ! -e $LOGDIR ]; then
 	mkdir $LOGDIR
 fi
 
-for i in `seq $STUDENT_NUMBER_FROM $STUDENT_NUMBER_TO`; do
+for i in $( seq $STUDENT_NUMBER_FROM $STUDENT_NUMBER_TO ); do
 	submit_files "student_$i" > "$LOGDIR/student_$i.log" 2>&1
 done
 
