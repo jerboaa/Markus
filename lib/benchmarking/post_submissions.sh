@@ -11,16 +11,16 @@ function usage(){
 function submit_files(){
 	USER=$1
 	# log in
-	curl -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL"
-	curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" --data "user_login=$USER" --data "user_password=blah" -v "$MARKUS_BASE_URL"
+	$TIME_PROG -f "$TIME_FORMAT" curl -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL"
+	$TIME_PROG -f "$TIME_FORMAT" curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" --data "user_login=$USER" --data "user_password=blah" -v "$MARKUS_BASE_URL"
 	# should be logged in now and get a redirect to main/assignments
-	curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL/main"
+	$TIME_PROG -f "$TIME_FORMAT" curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL/main"
 	# request the assignments list page
-	curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL/main/assignments"
+	$TIME_PROG -f "$TIME_FORMAT" curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL/main/assignments"
 	# create the subversion repository
-	curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL/main/assignments/student_interface/1"
+	$TIME_PROG -f "$TIME_FORMAT" curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL/main/assignments/student_interface/1"
 	# load the file manager
-	curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL/main/submissions/file_manager/1"
+	$TIME_PROG -f "$TIME_FORMAT" curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL/main/submissions/file_manager/1"
 	# submit files
 	new_files_param_pre="-F new_files[]=@"
 	new_files_param_post=" "
@@ -32,7 +32,7 @@ function submit_files(){
 	done
 	# Make sure that you are not submitting the same filename twice as this will
 	# result in a conflict and therefore no submissions will be maded at all.
-	curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" -v $new_files_param "$MARKUS_BASE_URL/main/submissions/update_files/1"
+	$TIME_PROG -f "$TIME_FORMAT" curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" -v $new_files_param "$MARKUS_BASE_URL/main/submissions/update_files/1"
 }
 
 # CONFIG
@@ -44,6 +44,8 @@ LOGDIR=log
 # Main
 STUDENT_NUMBER_FROM=$1
 STUDENT_NUMBER_TO=$2
+TIME_PROG="/usr/bin/time"
+TIME_FORMAT='+++ELAPSED TIME+++ %e +++'
 
 # sanity checks
 if [ $# -lt 2 ] || [ $STUDENT_NUMBER_FROM -lt 0 ] ||
