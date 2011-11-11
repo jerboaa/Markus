@@ -1,0 +1,9 @@
+This is a collection of scripts which should be
+helpful to perform load testing on MarkUs.
+
+The order in which these scripts should be run is
+as follows:
+
+  1. run-load-tests.sh (which uses post_submissions.sh)
+  2. run-load-tests.sh -c (which collects results from clients)
+  3. log_file_analyzer.sh (which uses request_time_analyzer.rb)
