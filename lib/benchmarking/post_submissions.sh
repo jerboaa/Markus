@@ -10,6 +10,7 @@ function usage(){
 
 function submit_files(){
 	USER=$1
+	COOKIE_JAR="markus-cookie-jar-$USER.txt"
 	# log in
 	$TIME_PROG -f "$TIME_FORMAT" curl -c "$COOKIE_JAR" -v "$MARKUS_BASE_URL"
 	$TIME_PROG -f "$TIME_FORMAT" curl -b "$COOKIE_JAR" -c "$COOKIE_JAR" --data "user_login=$USER" --data "user_password=blah" -v "$MARKUS_BASE_URL"
@@ -36,7 +37,6 @@ function submit_files(){
 }
 
 # CONFIG
-COOKIE_JAR="markus-cookie-jar.txt"
 SUBMISSION_FILES_FOLDER="./submission_files"
 MARKUS_BASE_URL="http://tikal.red.sandbox/markus/en"
 LOGDIR=log
