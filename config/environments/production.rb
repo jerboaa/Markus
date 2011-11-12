@@ -28,6 +28,13 @@ config.action_controller.allow_forgery_protection    = true
 # Disable delivery errors, bad email addresses will be ignored
 config.action_mailer.raise_delivery_errors = false
 
+# Mongrel logging hack
+if ( defined?(Mongrel::HttpServer) )
+  port = 0
+  ObjectSpace.each_object(Mongrel::HttpServer) { |i| port = i.port }
+  config.logger = Logger.new("#{RAILS_ROOT}/log/#{RAILS_ENV}.#{port}.log", 20, 5242880)
+end
+
 ###################################################################
 # MarkUs SPECIFIC CONFIGURATION
 #   - use "/" as path separator no matter what OS server is running
