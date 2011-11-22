@@ -253,6 +253,13 @@ class GroupsController < ApplicationController
     grouping_ids = params[:groupings]
     student_ids = params[:students]
 
+    if params[:global_actions] == "new"
+      grouping = @assignment.add_group
+      @groupings_data = construct_table_rows([grouping], @assignment)
+      render :action => "modify_groupings"
+      return
+    end
+
     if params[:groupings].nil? or params[:groupings].size ==  0
       #Just do nothing
       render :nothing => true
