@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script for triggering load tests on several clients
+# Script for triggering repo creation on several clients
 # which are accessible via SSH. Clients need to have
 # SSH public key access set up as well as the server (or
 # the machine where this script is executed) has an SSH
@@ -12,7 +12,7 @@ NUM_CLIENTS=$( wc -l $CLIENTS_IP_FILE | cut -d' ' -f1)
 SSH_USERNAME="severin"
 RUNNERS_PER_CLIENT=4
 SUBMISSION_FILES_DIR="submission_files"
-SCRIPTS="post_submissions.sh"
+SCRIPTS="create_repositories.sh"
 RESULTS_DIR="mb_results"
 
 # Main
@@ -25,18 +25,18 @@ elif [ "$1" == "-h" ]; then
 	cat <<EOF
 -----------------------------------------------------------------------------------
 
-Load test script for MarkUs
+Create repo script for MarkUs
 
 	usage: $0 {-c|-h|NUM_STUDENTS}
 
-In order to start load test runners on clients (requires proper SSH pub-key setup):
+In order to start repo creation script on clients (requires proper SSH pub-key setup):
 
 	$0 NUM_STUDENTS
 
 Where NUM_STUDENTS is the total number of students you have created via rake. I.e.
 $ bundle exec rake markus:benchmark:students_create num=NUM_STUDENTS
 
-In order to collect results from clients after load simulations use:
+In order to collect results from clients:
 
 	$0 -c
 
@@ -77,7 +77,7 @@ function run_test() {
 			# Note to self (Severin): This is most likely the most
 			# unreadable bash snippet I've ever written :(
 			ssh -l $SSH_USERNAME $i -f \
-				 "cd mb; rm -rf log; ./post_submissions.sh $(( $(( $j * $block_range_per_client)) + $(( $(( $k * $block_range)) + 1)) )) $(( $(( $j * $block_range_per_client)) + $(($block_range * $(($k + 1)))) ))"
+				 "cd mb; rm -rf log; ./create_repositories.sh $(( $(( $j * $block_range_per_client)) + $(( $(( $k * $block_range)) + 1)) )) $(( $(( $j * $block_range_per_client)) + $(($block_range * $(($k + 1)))) ))"
 		done
 	j=$(( j + 1))
 	done
