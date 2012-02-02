@@ -175,7 +175,7 @@ class AssignmentsController < ApplicationController
       rescue Exception, RuntimeError => e
         @assignment.errors.add(:base, I18n.t("assignment.error",
                                               :message => e.message))
-        redirect_to :action => 'edit', :id => @assignment.id
+        render :action => 'edit', :id => @assignment.id
       return
     end
 
@@ -441,6 +441,10 @@ class AssignmentsController < ApplicationController
 
   def process_assignment_form(assignment, params)
     assignment.attributes = params[:assignment]
+    
+    # first delete all the previously created periods for the given submission_rule
+    assignment.submission_rule.periods.where("id != ?", assignment.submission_rule.id).delete_all
+        
     # Work around rails' (v2.3.8 and potentially v2.3.9)
     # accept_nested_attributes_for bug, which do not allow
     # us to remove assignment files. We do not support rails
@@ -477,21 +481,8 @@ class AssignmentsController < ApplicationController
         raise I18n.t("assignment.not_valid_submission_rule",
           :type => params[:assignment][:submission_rule_attributes][:type])
       end
-
-      assignment.submission_rule.destroy
-      submission_rule = SubmissionRule.new
-      # A little hack to get around Rails' protection of the "type"
-      # attribute
-      submission_rule.type =
-         params[:assignment][:submission_rule_attributes][:type]
-      assignment.submission_rule = submission_rule
-      # For some reason, when we create new rule, we can't just apply
-      # the params[:assignment] hash to @assignment.attributes...we have
-      # to create any new periods manually, like this:
-      if !params[:assignment][:submission_rule_attributes][:periods_attributes].nil?
-        assignment.submission_rule.periods_attributes =
-           params[:assignment][:submission_rule_attributes][:periods_attributes]
-      end
+      
+      assignment.submission_rule.type = params[:assignment][:submission_rule_attributes][:type]
     end
 
     if params[:is_group_assignment] == "true"
