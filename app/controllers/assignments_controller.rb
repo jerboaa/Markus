@@ -184,7 +184,7 @@ class AssignmentsController < ApplicationController
       redirect_to :action => 'edit', :id => params[:id]
       return
     else
-      redirect_to :action => 'edit', :id => @assignment.id
+      render :action => 'edit', :id => @assignment.id
     end
   end
 
@@ -468,8 +468,7 @@ class AssignmentsController < ApplicationController
       assignment.section_groups_only = true
     end
     
-    # Was the SubmissionRule changed?  If so, wipe out any existing
-    # Periods, and switch the type of the SubmissionRule.
+    # Was the SubmissionRule changed?  If so, switch the type of the SubmissionRule.
     # This little conditional has to do some hack-y workarounds, since
     # accepts_nested_attributes_for is a little...dumb.
     if assignment.submission_rule.attributes['type'] !=
@@ -481,7 +480,6 @@ class AssignmentsController < ApplicationController
         raise I18n.t("assignment.not_valid_submission_rule",
           :type => params[:assignment][:submission_rule_attributes][:type])
       end
-      
       assignment.submission_rule.type = params[:assignment][:submission_rule_attributes][:type]
     end
 
