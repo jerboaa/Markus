@@ -291,6 +291,35 @@ class AssignmentsControllerTest < AuthenticatedControllerTest
         assert_not_nil assigns(:assignment)
         assert assigns(:assignment).errors.empty?
       end
+      
+      should "be able to switch periods when editing an assignment" do
+        put_as @admin,
+                :update,
+                {:id => @assignment.id,
+                 :assignment => {
+                   :submission_rule_attributes => {
+                     :type => 'PenaltyDecayPeriodSubmissionRule',
+                     :id => @assignment.submission_rule.id,
+                     :periods_attributes => [
+                       {:deduction => '13', :hours => '13', :interval => '13'}
+                     ]}}}
+        a = Assignment.find(@assignment.id)            
+        assert_equal 13, a.submission_rule.periods.first.deduction
+        assert_equal 13, a.submission_rule.periods.first.hours
+        assert_equal 13, a.submission_rule.periods.first.interval
+        
+        put_as @admin,
+                :update,
+                {:id => @assignment.id,
+                 :assignment => {
+                   :submission_rule_attributes => {
+                     :type => 'GracePeriodSubmissionRule',
+                     :id => @assignment.submission_rule.id,
+                     :periods_attributes => [
+                       {:hours => '12'},
+                     ]}}}
+        assert_equal 12, a.submission_rule.periods.first.hours
+      end
 
       should "be able to set instructor forms groups" do
         put_as @admin,
