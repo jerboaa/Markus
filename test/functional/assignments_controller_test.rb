@@ -292,24 +292,35 @@ class AssignmentsControllerTest < AuthenticatedControllerTest
         assert assigns(:assignment).errors.empty?
       end
       
-      should "be able to switch periods when editing an assignment" do
-        put_as @admin, :update,
-            {:id => @assignment.id,
-                 :assignment => {
-                   :submission_rule_attributes => {
-                     :type => 'PenaltyPeriodSubmissionRule',
-                     :id => @assignment.submission_rule.id,
-                     :periods_attributes => [:deduction => '10', :hours => '24']}}}
-                     
-        put_as @admin, :update,
-            {:id => @assignment.id,
+      # Regression test for Github issue #568
+      should "be able to switch submission rule when editing an assignment" do
+        # First make sure that the current submission rule is one with periods
+        # which we can then switch to NoLateSubmissionRule via a put_as
+        rule = GracePeriodSubmissionRule.make
+        period = Period.make
+        period.submission_rule = rule
+        assert period.save
+        assert rule.periods.length > 0
+        @assignment = Assignment.make( :submission_rule => rule )
+        assert @assignment.submission_rule.is_a?(GracePeriodSubmissionRule)
+
+        put_as @admin,
+                :update,
+                {:id => @assignment.id,
                  :assignment => {
                    :submission_rule_attributes => {
                      :type => 'NoLateSubmissionRule',
-                     :id => @assignment.submission_rule.id }}}
+                     :periods_attributes => {
+                        "1" => { :id => period.id } },
+                     :id => @assignment.submission_rule.id,
+                     }}}
+        assert_response :redirect
+        # no errors should have been produced
+        assert_equal [], assigns(:assignment).errors[:base]
+
         @assignment.reload
-        
-        assert_equal "Successfully updated the assignment", flash[:success] 
+        assert @assignment.submission_rule.is_a?(NoLateSubmissionRule)
+        assert_equal I18n.t("assignment.update_success"), flash[:success]
       end
 
       should "be able to set instructor forms groups" do
